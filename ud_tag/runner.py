@@ -17,8 +17,6 @@ def main():
     parser = ArgumentParser()
     parser.add_argument('--train', action='store')
     parser.add_argument('--finetune', action='store')
-    # sanity for 0
-    parser.add_argument('--ft', action='store', type=bool, default=False)
     parser.add_argument('--val_train', action='store')
     parser.add_argument('--val_finetune', action='store')
     parser.add_argument('--config', action='store', default='./configs/debug.jsonnet')
@@ -35,7 +33,7 @@ def main():
 
     if args.val_finetune:
         val_partition = args.val_finetune
-        if args.ft:
+        if args.finetune:
             finetune_config = Params.from_file(args.config,
                                                ext_vars={'train_path': args.finetune, 'val_path': args.val_finetune})
             model = fine_tune_model(model, finetune_config, os.path.join(args.save, 'ft'), extend_vocab=True)

@@ -52,8 +52,8 @@
     "trainer": {
       "num_epochs": 50,
       "grad_norm": 5.0,
-      "patience": 10,
-      "cuda_device": -1,
+      "patience": 50,
+      "cuda_device": 0,
       "optimizer": {
         "type": "dense_sparse_adam",
         "betas": [0.9, 0.9]
