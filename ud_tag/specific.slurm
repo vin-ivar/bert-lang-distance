@@ -10,4 +10,4 @@ source ~/.bashrc
 conda activate nlp
 
 export UD="$HOME/corpora/ud"
-python3 runner.py --train "$UD/en_ewt/en_ewt-ud-train.conllu" --val_train "$UD/en_ewt/en_ewt-ud-dev.conllu" --finetune "$UD/$1/sorted/$2.conllu" --val_finetune "$UD/$1/$1-ud-dev.conllu" --config "configs/gpu.jsonnet" --save "experiments/models/$1.$2"
+python3 runner.py --train "$UD/en_ewt/en_ewt-ud-train.conllu" --val_train "$UD/en_ewt/en_ewt-ud-dev.conllu" --finetune "$UD/$1/sorted/$2.conllu" --val_finetune "$UD/$1/$1-ud-dev.conllu" --config "configs/gpu_xlm.jsonnet" --save "experiments/models/$1.$2"

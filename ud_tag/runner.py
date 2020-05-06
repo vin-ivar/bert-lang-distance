@@ -19,7 +19,7 @@ def main():
     parser.add_argument('--finetune', action='store')
     parser.add_argument('--val_train', action='store')
     parser.add_argument('--val_finetune', action='store')
-    parser.add_argument('--config', action='store', default='./configs/debug.jsonnet')
+    parser.add_argument('--config', action='store', default='./configs/debug_xlm.jsonnet')
     parser.add_argument('--save', action='store', default='experiments/models/default')
     args = parser.parse_args()
 

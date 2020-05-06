@@ -134,6 +134,9 @@ class WordpieceTagger(Model):
 
         """
         embedded_text_input = self.text_field_embedder(words, offsets=offsets)
+        if embedded_text_input.size(1) != offsets.size(1):
+            embedded_text_input = embedded_text_input[:, offsets].diagonal().permute(2, 0, 1)
+
         batch_size, sequence_length, _ = embedded_text_input.size()
         # mask = get_text_field_mask(tokens)
         mask = torch.zeros_like(offsets)

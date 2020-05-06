@@ -10,4 +10,4 @@ source ~/.bashrc
 conda activate nlp
 
 export PANX="$HOME/corpora/panx_dataset"
-python3 runner.py --train "$PANX/en/train" --val_train "$PANX/en/dev" --val_finetune "$PANX/$1/dev" --config "./configs/gpu.jsonnet" --save "experiments/models/baseline.$1"
+python3 runner.py --train "$PANX/en/train" --val_train "$PANX/en/dev" --val_finetune "$PANX/$1/dev" --config "./configs/gpu_xlm.jsonnet" --save "experiments/models/baseline.$1"

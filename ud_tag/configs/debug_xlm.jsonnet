@@ -3,13 +3,13 @@
         "type":  "wordpiece_udpos",
         "tokenizer": {
             "type": "pretrained_transformer",
-            "model_name": "xlm-roberta-large",
+            "model_name": "xlm-roberta-base",
             "do_lowercase": false,
         },
         "token_indexers": {
             "tokens": {
                 "type": "pretrained_transformer",
-                "model_name": "xlm-roberta-large",
+                "model_name": "xlm-roberta-base",
                 "do_lowercase": false,
             }
         }
@@ -21,14 +21,14 @@
       "text_field_embedder": {
         "tokens": {
           "type": "pretrained_transformer",
-          "model_name": "xlm-roberta-large",
+          "model_name": "xlm-roberta-base",
         }
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
-        "input_size": 1024,
-        "hidden_size": 400,
-        "num_layers": 2,
+        "input_size": 768,
+        "hidden_size": 4,
+        "num_layers": 1,
         "recurrent_dropout_probability": 0.3,
         "use_highway": true
       },
@@ -47,13 +47,12 @@
     "iterator": {
       "type": "bucket",
       "sorting_keys": [["words", "num_tokens"]],
-      "batch_size" : 10,
+      "batch_size" : 128
     },
     "trainer": {
-      "num_epochs": 10,
+      "num_epochs": 1,
       "grad_norm": 5.0,
-      "patience": 10,
-      "cuda_device": 0,
+      "cuda_device": -1,
       "optimizer": {
         "type": "dense_sparse_adam",
         "betas": [0.9, 0.9]

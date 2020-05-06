@@ -96,7 +96,7 @@ class UDWordpieceReader(DatasetReader):
             model_type = "bert"
         except:
             wordpieces = [Token(w) for w in self.tokenizer._tokenizer.tokenize(
-                            "[CLS] " + " ".join(words) + " [SEP]")]
+                            "<s> " + " ".join(words) + " </s>")]
             model_type = "xlm-r"
 
         if len(wordpieces) >= 512:
@@ -112,7 +112,7 @@ class UDWordpieceReader(DatasetReader):
                 if piece.text.startswith('▁'): # NOT an underscore!
                     offsets.append(n)
 
-        offsets = offsets[1:-1]
+        offsets = offsets[1:-1] if model_type == 'bert' else offsets
         tokens = [Token(t) for t in words]
 
         wordpiece_field = TextField(wordpieces, self._token_indexers)

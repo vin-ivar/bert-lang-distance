@@ -3,13 +3,13 @@
         "type":  "wordpiece_ner",
         "tokenizer": {
             "type": "pretrained_transformer",
-            "model_name": "xlm-roberta-base",
+            "model_name": "xlm-roberta-large",
             "do_lowercase": false,
         },
         "token_indexers": {
             "tokens": {
                 "type": "pretrained_transformer",
-                "model_name": "xlm-roberta-base",
+                "model_name": "xlm-roberta-large",
                 "do_lowercase": false,
             }
         }
@@ -21,12 +21,12 @@
       "text_field_embedder": {
         "tokens": {
           "type": "pretrained_transformer",
-          "model_name": "xlm-roberta-base",
+          "model_name": "xlm-roberta-large",
         }
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
-        "input_size": 768,
+        "input_size": 1024,
         "hidden_size": 400,
         "num_layers": 2,
         "recurrent_dropout_probability": 0.3,

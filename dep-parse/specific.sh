@@ -11,7 +11,7 @@ for m in ${mods[@]}; do
         for trg in ${tb_short[@]}; do
             x="${s}.${m}"
             exp="dep.${trg}.${x}"
-            echo "sbatch -J ${exp} -e experiments/logs/ft_${s}/${x}.${trg} -o experiments/logs/ft_${s}/${x}.${trg} specific.slurm ${trg} ${x}"
+            echo "sbatch -J ${exp} -e experiments/logs/xlmr/ft_${s}/${x}.${trg} -o experiments/logs/xlmr/ft_${s}/${x}.${trg} specific.slurm ${trg} ${x}"
         done
     done
 done
