@@ -249,9 +249,10 @@ class BiaffineDependencyParser(Model):
         mask : ``torch.LongTensor``
             A mask denoting the padded elements in the batch.
         """
-        embedded_text_input = self.text_field_embedder(words, offsets=offsets)
-        if embedded_text_input.size(1) != offsets.size(1):
-            embedded_text_input = embedded_text_input[:, offsets].diagonal().permute(2, 0, 1)
+        # embedded_text_input = self.text_field_embedder(words, offsets=offsets)
+        # if embedded_text_input.size(1) != offsets.size(1):
+        embedded_text_input = self.text_field_embedder(words)
+        embedded_text_input = embedded_text_input[:, offsets].diagonal().permute(2, 0, 1)
 
         # wordpiece_mask = torch.stack([i['mask'] for i in metadata])
         if pos_tags is not None and self._pos_tag_embedding is not None:

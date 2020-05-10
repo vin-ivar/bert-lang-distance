@@ -1,5 +1,5 @@
 {
-    "dataset_reader":{
+    "dataset_reader": {
         "type":  "wordpiece_ud",
         "tokenizer": {
             "type": "pretrained_transformer",
@@ -34,7 +34,7 @@
       },
       "use_mst_decoding_for_validation": false,
       "arc_representation_dim": 5,
-      "tag_representation_dim": 2,
+      "tag_representation_dim": 1,
       "dropout": 0.3,
       "input_dropout": 0.3,
       "initializer": [
@@ -45,8 +45,7 @@
         [".*weight_ih.*", {"type": "xavier_uniform"}],
         [".*weight_hh.*", {"type": "orthogonal"}],
         [".*bias_ih.*", {"type": "zero"}],
-        [".*bias_hh.*", {"type": "lstm_hidden_bias"}],
-      ]
+        [".*bias_hh.*", {"type": "lstm_hidden_bias"}]]
     },
 
     "iterator": {
@@ -55,8 +54,9 @@
       "batch_size" : 128
     },
     "trainer": {
-      "num_epochs": 1,
+      "num_epochs": 50,
       "grad_norm": 5.0,
+      "patience": 50,
       "cuda_device": -1,
       "validation_metric": "+LAS",
       "optimizer": {

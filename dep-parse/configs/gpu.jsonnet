@@ -51,7 +51,7 @@
     "iterator": {
       "type": "bucket",
       "sorting_keys": [["words", "num_tokens"]],
-      "batch_size" : 128
+      "batch_size" : 64,
     },
     "trainer": {
       "num_epochs": 50,
