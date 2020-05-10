@@ -1,9 +1,8 @@
 from argparse import ArgumentParser
 
 from allennlp.commands.train import train_model
-from allennlp.commands.fine_tune import fine_tune_model
-from allennlp.training.trainer import Params
-from allennlp.common.util import import_submodules
+from allennlp.common import Params
+from allennlp.common.util import import_module_and_submodules
 
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.models.model import Model
@@ -19,12 +18,12 @@ def main():
     parser.add_argument('--finetune', action='store')
     parser.add_argument('--val_train', action='store')
     parser.add_argument('--val_finetune', action='store')
-    parser.add_argument('--config', action='store', default='configs/debug.jsonnet')
+    parser.add_argument('--config', action='store', default='configs/cpu.jsonnet')
     parser.add_argument('--save', action='store', default='experiments/models/default')
     args = parser.parse_args()
 
-    import_submodules("model")
-    import_submodules("loader")
+    import_module_and_submodules("model")
+    import_module_and_submodules("loader")
     config = Params.from_file(args.config, ext_vars={'train_path': args.train, 'val_path': args.val_train})
 
     val_partition = args.val_train
@@ -36,7 +35,7 @@ def main():
         if args.finetune:
             finetune_config = Params.from_file(args.config,
                                                ext_vars={'train_path': args.finetune, 'val_path': args.val_finetune})
-            model = fine_tune_model(model, finetune_config, os.path.join(args.save, 'ft'), extend_vocab=True)
+            model = train_model(finetune_config, os.path.join(args.save, 'ft'))
 
     predictor = Predictor(model, reader)
     uas, las = np.array([]), np.array([])

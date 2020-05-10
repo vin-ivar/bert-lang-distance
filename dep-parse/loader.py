@@ -12,6 +12,7 @@ from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
 from allennlp.data.tokenizers import Token, Tokenizer
 
 import numpy as np
+import transformers
 
 logger = logging.getLogger(__name__)
 
@@ -88,16 +89,29 @@ class UDWordpieceReader(DatasetReader):
         """
         fields: Dict[str, Field] = {}
 
-        model_type = ""
-        words = [i.replace(' ', '') for i in words]
-        try:
-            wordpieces = [Token(w) for w in self.tokenizer._tokenizer.wordpiece_tokenizer.tokenize(
-                            "[CLS] " + " ".join(words) + " [SEP]")]
+        if isinstance(self.tokenizer.tokenizer, transformers.BertTokenizer):
             model_type = "bert"
-        except:
-            wordpieces = [Token(w) for w in self.tokenizer._tokenizer.tokenize(
-                            "<s> " + " ".join(words) + " </s>")]
-            model_type = "xlm-r"
+
+        words = [i.replace(' ', '') for i in words]
+
+        self.tokenizer._add_special_tokens = True
+        bos, eos = self.tokenizer.tokenize("")
+        self.tokenizer._add_special_tokens = False
+
+        wordpieces = [bos]
+        for i in words:
+            current = self.tokenizer.tokenize(i)
+            for j in current[1:]:
+                if model_type == 'bert':
+                    j.text = '##' + j.text if not j.text.startswith('##') else j.text
+            wordpieces.extend(current)
+        wordpieces.append(eos)
+
+        # wordpieces = self.tokenizer.tokenize(" ".join(words))
+
+
+        # wordpieces = [Token(w) for w in self.tokenizer.tokenizer.wordpiece_tokenizer.tokenize(
+        #                 "[CLS] " + " ".join(words) + " [SEP]")]
 
         if len(wordpieces) >= 512:
             return None
@@ -113,6 +127,10 @@ class UDWordpieceReader(DatasetReader):
                     offsets.append(n)
 
         offsets = offsets[1:-1] if model_type == 'bert' else offsets
+        if len(offsets) != len(words):
+            logger.info(f'dropping {" ".join(words)}')
+            return None
+
         tokens = [Token(t) for t in words]
 
         wordpiece_field = TextField(wordpieces, self._token_indexers)
