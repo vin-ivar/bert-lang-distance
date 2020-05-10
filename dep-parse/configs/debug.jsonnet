@@ -4,13 +4,11 @@
         "tokenizer": {
             "type": "pretrained_transformer",
             "model_name": "bert-base-multilingual-cased",
-            "do_lowercase": false,
         },
         "token_indexers": {
             "tokens": {
                 "type": "pretrained_transformer",
                 "model_name": "bert-base-multilingual-cased",
-                "do_lowercase": false,
             }
         }
     },
@@ -19,10 +17,12 @@
     "model": {
       "type": "wordpiece_parser",
       "text_field_embedder": {
-        "tokens": {
-          "type": "bert-pretrained",
-          "pretrained_model": "bert-base-multilingual-cased",
-        }
+        "token_embedders": {
+          "tokens": {
+            "type": "pretrained_transformer",
+            "model_name": "bert-base-multilingual-cased",
+          },
+        },
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
@@ -37,22 +37,25 @@
       "tag_representation_dim": 2,
       "dropout": 0.3,
       "input_dropout": 0.3,
-      "initializer": [
-        [".*projection.*weight", {"type": "xavier_uniform"}],
-        [".*projection.*bias", {"type": "zero"}],
-        [".*tag_bilinear.*weight", {"type": "xavier_uniform"}],
-        [".*tag_bilinear.*bias", {"type": "zero"}],
-        [".*weight_ih.*", {"type": "xavier_uniform"}],
-        [".*weight_hh.*", {"type": "orthogonal"}],
-        [".*bias_ih.*", {"type": "zero"}],
-        [".*bias_hh.*", {"type": "lstm_hidden_bias"}],
-      ]
+      "initializer": {
+        "regexes": [
+          [".*projection.*weight", {"type": "xavier_uniform"}],
+          [".*projection.*bias", {"type": "zero"}],
+          [".*tag_bilinear.*weight", {"type": "xavier_uniform"}],
+          [".*tag_bilinear.*bias", {"type": "zero"}],
+          [".*weight_ih.*", {"type": "xavier_uniform"}],
+          [".*weight_hh.*", {"type": "orthogonal"}],
+          [".*bias_ih.*", {"type": "zero"}],
+          [".*bias_hh.*", {"type": "lstm_hidden_bias"}],
+        ],
+      },
     },
-
-    "iterator": {
-      "type": "bucket",
-      "sorting_keys": [["words", "num_tokens"]],
-      "batch_size" : 128
+    "data_loader": {
+        "batch_sampler": {
+          "type": "bucket",
+          "sorting_keys": ["words"],
+          "batch_size" : 128
+        },
     },
     "trainer": {
       "num_epochs": 1,

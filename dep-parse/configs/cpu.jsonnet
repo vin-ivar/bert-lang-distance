@@ -27,14 +27,14 @@
       "encoder": {
         "type": "stacked_bidirectional_lstm",
         "input_size": 768,
-        "hidden_size": 400,
-        "num_layers": 3,
+        "hidden_size": 4,
+        "num_layers": 1,
         "recurrent_dropout_probability": 0.3,
         "use_highway": true
       },
       "use_mst_decoding_for_validation": false,
-      "arc_representation_dim": 500,
-      "tag_representation_dim": 100,
+      "arc_representation_dim": 5,
+      "tag_representation_dim": 2,
       "dropout": 0.3,
       "input_dropout": 0.3,
       "initializer": {
@@ -46,22 +46,21 @@
           [".*weight_ih.*", {"type": "xavier_uniform"}],
           [".*weight_hh.*", {"type": "orthogonal"}],
           [".*bias_ih.*", {"type": "zero"}],
-          [".*bias_hh.*", {"type": "lstm_hidden_bias"}]
+          [".*bias_hh.*", {"type": "lstm_hidden_bias"}],
         ],
       },
     },
     "data_loader": {
-      "batch_sampler": {
-        "type": "bucket",
-        "sorting_keys": ["words"],
-        "batch_size" : 32
-      },
+        "batch_sampler": {
+          "type": "bucket",
+          "sorting_keys": ["words"],
+          "batch_size" : 128
+        },
     },
     "trainer": {
-      "num_epochs": 20,
+      "num_epochs": 1,
       "grad_norm": 5.0,
-      "patience": 20,
-      "cuda_device": 0,
+      "cuda_device": -1,
       "validation_metric": "+LAS",
       "optimizer": {
         "type": "dense_sparse_adam",
