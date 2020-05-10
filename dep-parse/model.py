@@ -24,6 +24,8 @@ from allennlp.nn.util import (
 from allennlp.nn.chu_liu_edmonds import decode_mst
 from allennlp.training.metrics import AttachmentScores
 
+import transformers
+
 logger = logging.getLogger(__name__)
 
 POS_TO_IGNORE = {"`", "''", ":", ",", ".", "PU", "PUNCT", "SYM"}
@@ -94,6 +96,8 @@ class BiaffineDependencyParser(Model):
 
         self.text_field_embedder = text_field_embedder
         self.encoder = encoder
+
+        self.bert = transformers.BertModel.from_pretrained('bert-base-multilingual-cased')
 
         encoder_dim = encoder.get_output_dim()
 
@@ -218,7 +222,8 @@ class BiaffineDependencyParser(Model):
         mask : `torch.BoolTensor`
             A mask denoting the padded elements in the batch.
         """
-        embedded_text_input = self.text_field_embedder(words)
+        # embedded_text_input = self.text_field_embedder(words)
+        embedded_text_input = self.bert(words['tokens']['token_ids'], attention_mask=words['tokens']['mask'])[0]
         embedded_text_input = embedded_text_input[:, offsets].diagonal().permute(2, 0, 1)
 
         if pos_tags is not None and self._pos_tag_embedding is not None:
