@@ -1,17 +1,7 @@
+local COMMON = import 'common_cpu.jsonnet';
+
 {
-    "dataset_reader": {
-        "type":  "wordpiece_ud",
-        "tokenizer": {
-            "type": "pretrained_transformer",
-            "model_name": "bert-base-multilingual-cased",
-        },
-        "token_indexers": {
-            "tokens": {
-                "type": "pretrained_transformer",
-                "model_name": "bert-base-multilingual-cased",
-            }
-        }
-    },
+    "dataset_reader": COMMON["dataset_reader"],
     "train_data_path": std.extVar("train_path"),
     "validation_data_path": std.extVar("val_path"),
     "model": {
@@ -20,21 +10,21 @@
         "token_embedders": {
           "tokens": {
             "type": "pretrained_transformer",
-            "model_name": "bert-base-multilingual-cased",
+            "model_name": std.extVar("model_name"),
           },
         },
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
         "input_size": 768,
-        "hidden_size": 400,
-        "num_layers": 3,
+        "hidden_size": 4,
+        "num_layers": 1,
         "recurrent_dropout_probability": 0.3,
         "use_highway": true
       },
       "use_mst_decoding_for_validation": false,
-      "arc_representation_dim": 500,
-      "tag_representation_dim": 100,
+      "arc_representation_dim": 5,
+      "tag_representation_dim": 1,
       "dropout": 0.3,
       "input_dropout": 0.3,
       "initializer": {
@@ -50,22 +40,6 @@
         ],
       },
     },
-    "data_loader": {
-      "batch_sampler": {
-        "type": "bucket",
-        "sorting_keys": ["words"],
-        "batch_size" : 32
-      },
-    },
-    "trainer": {
-      "num_epochs": 20,
-      "grad_norm": 5.0,
-      "patience": 20,
-      "cuda_device": 0,
-      "validation_metric": "+LAS",
-      "optimizer": {
-        "type": "dense_sparse_adam",
-        "betas": [0.9, 0.9]
-      }
-    }
+    "data_loader": COMMON["data_loader"],
+    "trainer": COMMON["trainer"],
   }

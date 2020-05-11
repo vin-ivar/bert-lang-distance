@@ -95,6 +95,7 @@ class BiaffineDependencyParser(Model):
         super().__init__(vocab, **kwargs)
 
         self.text_field_embedder = text_field_embedder
+        self.text_field_embedder.requires_grad_(False)
         self.encoder = encoder
 
         self.bert = transformers.BertModel.from_pretrained('bert-base-multilingual-cased')
@@ -222,8 +223,9 @@ class BiaffineDependencyParser(Model):
         mask : `torch.BoolTensor`
             A mask denoting the padded elements in the batch.
         """
-        # embedded_text_input = self.text_field_embedder(words)
-        embedded_text_input = self.bert(words['tokens']['token_ids'], attention_mask=words['tokens']['mask'])[0]
+        # head_tags = None
+        embedded_text_input = self.text_field_embedder(words)
+        # embedded_text_input = self.bert(words['tokens']['token_ids'], attention_mask=words['tokens']['mask'])[0]
         embedded_text_input = embedded_text_input[:, offsets].diagonal().permute(2, 0, 1)
 
         if pos_tags is not None and self._pos_tag_embedding is not None:

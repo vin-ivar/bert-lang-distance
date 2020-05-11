@@ -18,13 +18,15 @@ def main():
     parser.add_argument('--finetune', action='store')
     parser.add_argument('--val_train', action='store')
     parser.add_argument('--val_finetune', action='store')
-    parser.add_argument('--config', action='store', default='configs/cpu.jsonnet')
+    parser.add_argument('--config', action='store', default='configs/cpu')
     parser.add_argument('--save', action='store', default='experiments/models/default')
     args = parser.parse_args()
 
     import_module_and_submodules("model")
     import_module_and_submodules("loader")
-    config = Params.from_file(args.config, ext_vars={'train_path': args.train, 'val_path': args.val_train})
+    config = Params.from_file(args.config + '_train.jsonnet', ext_vars={'train_path': args.train,
+                                                                        'val_path': args.val_train,
+                                                                        'model_name': 'bert-base-multilingual-cased'})
 
     val_partition = args.val_train
     reader = DatasetReader.from_params(config.duplicate().pop('dataset_reader'))
@@ -33,8 +35,11 @@ def main():
     if args.val_finetune:
         val_partition = args.val_finetune
         if args.finetune:
-            finetune_config = Params.from_file(args.config,
-                                               ext_vars={'train_path': args.finetune, 'val_path': args.val_finetune})
+            finetune_config = Params.from_file(args.config + '_finetune.jsonnet',
+                                               ext_vars={'train_path': args.finetune,
+                                                         'val_path': args.val_finetune,
+                                                         'model_name': 'bert-base-multilingual-cased',
+                                                         'model_path': args.save})
             model = train_model(finetune_config, os.path.join(args.save, 'ft'))
 
     predictor = Predictor(model, reader)
