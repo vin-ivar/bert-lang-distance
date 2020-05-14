@@ -167,6 +167,29 @@ class BiaffineDependencyParser(Model):
         initializer(self)
 
     @overrides
+    def extend_embedder_vocab(self, embedding_sources_mapping: Dict[str, str] = None) -> None:
+        super().extend_embedder_vocab()
+        self.tag_bilinear = self.extend_bilinear_layer(self.tag_bilinear, self.vocab.get_vocab_size("head_tags"))
+
+    def extend_bilinear_layer(self, layer, new_dim):
+        extend_dim = new_dim - layer.out_features
+        if extend_dim == 0:
+            return layer
+
+        new_weight = torch.FloatTensor(extend_dim, layer.in1_features, layer.in2_features)
+        new_bias = torch.FloatTensor(extend_dim)
+        torch.nn.init.xavier_uniform_(new_weight)
+        torch.nn.init.zeros_(new_bias)
+
+        device = layer.weight.device
+        extended_weight = torch.cat([layer.weight.data, new_weight.to(device)], dim=0)
+        layer.weight = torch.nn.Parameter(extended_weight, requires_grad=layer.weight.requires_grad)
+        layer.bias = torch.nn.Parameter(torch.cat([layer.bias.data, new_bias.to(device)], dim=0),
+                                        requires_grad=layer.bias.requires_grad)
+
+        return layer
+
+    @overrides
     def forward(
         self,  # type: ignore
         words: TextFieldTensors,

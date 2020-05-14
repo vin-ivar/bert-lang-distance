@@ -16,7 +16,7 @@ local COMMON = import 'common_cpu.jsonnet';
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
-        "input_size": 768,
+        "input_size": std.parseInt(std.extVar("model_size")),
         "hidden_size": 4,
         "num_layers": 1,
         "recurrent_dropout_probability": 0.3,

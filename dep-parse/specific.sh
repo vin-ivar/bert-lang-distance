@@ -5,13 +5,14 @@ tb_short=(ar_padt eu_bdt zh_gsd en_ewt
           sv_talbanken tr_imst)
 mods=(longest shortest)
 size=(10 50 100 500 1000)
+model=xlmr
 
 for m in ${mods[@]}; do
     for s in ${size[@]}; do
         for trg in ${tb_short[@]}; do
             x="${s}.${m}"
-            exp="dep.${trg}.${x}"
-            echo "sbatch -J ${exp} -e experiments/logs/xlmr/ft_${s}/${x}.${trg} -o experiments/logs/xlmr/ft_${s}/${x}.${trg} specific.slurm ${trg} ${x}"
+            exp="dep.${trg}.${x}.${model}"
+            echo "sbatch -J ${exp} -e experiments/logs/${model}/ft_${s}/${x}.${trg} -o experiments/logs/${model}/ft_${s}/${x}.${trg} specific.slurm ${trg} ${x} ${model}"
         done
     done
 done

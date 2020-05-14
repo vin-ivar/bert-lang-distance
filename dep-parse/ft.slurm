@@ -7,7 +7,9 @@
 
 set -o errexit
 source ~/.bashrc
-conda activate nlp
+module purge
+conda activate debug
 
 export UD="$HOME/corpora/ud"
-python3 runner.py --train "$UD/en_ewt/en_ewt-ud-train.conllu" --val_train "$UD/en_ewt/en_ewt-ud-dev.conllu" --val_finetune "$UD/$1/$1-ud-dev.conllu" --config "./configs/gpu_xlm.jsonnet" --save "experiments/models/baseline.$1"
+python3 runner.py --train "$UD/en_ewt/en_ewt-ud-train.conllu" --val_train "$UD/en_ewt/en_ewt-ud-dev.conllu" --val_finetune "$UD/$1/$1-ud-dev.conllu" \
+                  --config "./configs/gpu" --save "experiments/models/baseline.$2.$1" --model $2

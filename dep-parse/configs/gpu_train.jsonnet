@@ -16,7 +16,7 @@ local COMMON = import 'common_gpu.jsonnet';
       },
       "encoder": {
         "type": "stacked_bidirectional_lstm",
-        "input_size": 768,
+        "input_size": std.parseInt(std.extVar("model_size")),
         "hidden_size": 400,
         "num_layers": 3,
         "recurrent_dropout_probability": 0.3,

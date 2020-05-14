@@ -12,7 +12,7 @@
       <paths name="saga">
         <serverdata>
           <mappings>
-            <mapping deploy="bert-lang-distance" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="bert-lang-refactor" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

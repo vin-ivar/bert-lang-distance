@@ -12,21 +12,32 @@ import os
 import torch
 import numpy as np
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def main():
     parser = ArgumentParser()
     parser.add_argument('--train', action='store')
     parser.add_argument('--finetune', action='store')
     parser.add_argument('--val_train', action='store')
     parser.add_argument('--val_finetune', action='store')
+    parser.add_argument('--model', action='store', default='bert')
     parser.add_argument('--config', action='store', default='configs/cpu')
     parser.add_argument('--save', action='store', default='experiments/models/default')
     args = parser.parse_args()
 
     import_module_and_submodules("model")
     import_module_and_submodules("loader")
+
+    model_name = 'xlm-roberta-large' if args.model == 'xlmr' else 'bert-base-multilingual-cased'
+    size = '1024' if args.model == 'xlmr' else '768'
+    logger.info(f'Using model {model_name}')
+
     config = Params.from_file(args.config + '_train.jsonnet', ext_vars={'train_path': args.train,
                                                                         'val_path': args.val_train,
-                                                                        'model_name': 'bert-base-multilingual-cased'})
+                                                                        'model_name': model_name,
+                                                                        'model_size': size})
 
     val_partition = args.val_train
     reader = DatasetReader.from_params(config.duplicate().pop('dataset_reader'))
@@ -38,12 +49,17 @@ def main():
             finetune_config = Params.from_file(args.config + '_finetune.jsonnet',
                                                ext_vars={'train_path': args.finetune,
                                                          'val_path': args.val_finetune,
-                                                         'model_name': 'bert-base-multilingual-cased',
+                                                         'model_name': model_name,
                                                          'model_path': args.save})
             model = train_model(finetune_config, os.path.join(args.save, 'ft'))
 
     predictor = Predictor(model, reader)
     uas, las = np.array([]), np.array([])
+
+    instances = reader.read(val_partition)
+    model.vocab.extend_from_instances(instances=instances)
+    model.extend_embedder_vocab()
+
     for i in reader._read(val_partition):
         _uas, _las, total = 0, 0, 0
         pred = predictor.predict_instance(i)

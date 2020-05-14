@@ -89,8 +89,7 @@ class UDWordpieceReader(DatasetReader):
         """
         fields: Dict[str, Field] = {}
 
-        if isinstance(self.tokenizer.tokenizer, transformers.BertTokenizer):
-            model_type = "bert"
+        model_type = "bert" if isinstance(self.tokenizer.tokenizer, transformers.BertTokenizer) else "xlmr"
 
         words = [i.replace(' ', '') for i in words]
 
@@ -107,13 +106,8 @@ class UDWordpieceReader(DatasetReader):
             wordpieces.extend(current)
         wordpieces.append(eos)
 
-        # wordpieces = self.tokenizer.tokenize(" ".join(words))
-
-
-        # wordpieces = [Token(w) for w in self.tokenizer.tokenizer.wordpiece_tokenizer.tokenize(
-        #                 "[CLS] " + " ".join(words) + " [SEP]")]
-
         if len(wordpieces) >= 512:
+            logger.warning(f"Too large: dropping {' '.join(words)}")
             return None
 
         # build map
@@ -122,13 +116,14 @@ class UDWordpieceReader(DatasetReader):
             if model_type == "bert":
                 if not piece.text.startswith('##'):
                     offsets.append(n)
-            elif model_type == "xlm-r":
+            elif model_type == "xlmr":
                 if piece.text.startswith('▁'): # NOT an underscore!
                     offsets.append(n)
 
         offsets = offsets[1:-1] if model_type == 'bert' else offsets
+
         if len(offsets) != len(words):
-            logger.info(f'dropping {" ".join(words)}')
+            logger.warning(f'offset fail: dropping {" ".join(words)}')
             return None
 
         tokens = [Token(t) for t in words]
