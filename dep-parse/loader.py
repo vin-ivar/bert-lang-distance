@@ -89,7 +89,7 @@ class UDWordpieceReader(DatasetReader):
         """
         fields: Dict[str, Field] = {}
 
-        model_type = "bert" if isinstance(self.tokenizer.tokenizer, transformers.BertTokenizer) else "xlmr"
+        model_type = "bert" if 'bert' in self.tokenizer.tokenizer.name_or_path else "xlmr"
 
         words = [i.replace(' ', '') for i in words]
 
