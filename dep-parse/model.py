@@ -98,8 +98,6 @@ class BiaffineDependencyParser(Model):
         self.text_field_embedder.requires_grad_(False)
         self.encoder = encoder
 
-        self.text_field_embedder.requires_grad_(False)
-
         encoder_dim = encoder.get_output_dim()
 
         self.head_arc_feedforward = arc_feedforward or FeedForward(
